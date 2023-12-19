@@ -6,7 +6,7 @@
 /*   By: aprado <aprado@student.42.rio>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/15 09:13:09 by aprado            #+#    #+#             */
-/*   Updated: 2023/12/19 12:59:35 by aprado           ###   ########.fr       */
+/*   Updated: 2023/12/19 14:57:56 by aprado           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,4 +46,23 @@ char	*ft_strjoin(char *s1, char *s2)
 		new[i++] = s2[j++];
 	new[s1len + s2len] = '\0';
 	return (new);
+}
+
+char	*ft_strdup(char *s)
+{
+	size_t	strlen;
+	size_t	i;
+	char	*dup;
+
+	i = 0;
+	strlen = ft_strlen(s);
+	if (strlen == 0)
+		return (NULL);	
+	dup = (char *)malloc((strlen + 1) * sizeof(char));
+	if (dup == NULL)
+		return (NULL);
+	while (i < strlen)
+		dup[i++] = *s++;
+	dup[strlen] = '\0';
+	return (dup);
 }
