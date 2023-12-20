@@ -6,7 +6,7 @@
 /*   By: aprado <aprado@student.42.rio>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 18:24:29 by aprado            #+#    #+#             */
-/*   Updated: 2023/12/20 13:10:55 by aprado           ###   ########.fr       */
+/*   Updated: 2023/12/20 15:31:01 by aprado           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,9 @@ int	chars_read_check(int chars_read, char *buf)
 
 char	*gnl_core(int fd)
 {
-	int		chars_read;
-	char	*piece;
-	char	*temp;
+	int			chars_read;
+	char		*piece;
+	char		*temp;
 	static char	*cake;
 
 	piece = malloc(sizeof(char) * (BUFFER_SIZE + 1));
