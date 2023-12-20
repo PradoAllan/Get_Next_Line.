@@ -6,36 +6,11 @@
 /*   By: aprado <aprado@student.42.rio>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/18 18:24:29 by aprado            #+#    #+#             */
-/*   Updated: 2023/12/19 16:13:23 by aprado           ###   ########.fr       */
+/*   Updated: 2023/12/20 11:49:31 by aprado           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
-
-char	*free_swap(char *cake, char *buf)
-{
-	char	*temp;
-
-	temp = ft_strjoin(cake, buf);
-	if (!cake)
-		return (temp);
-	free(cake);
-	return (temp);
-}
-
-int	is_complete_line(char *buf)
-{ 
-	int	i;
-
-	i = -1;
-	while (buf[++i])
-	{
-		if (buf[i] == '\n' || buf[i] == '\0')
-			return (1);
-	}
-	return (0);
-}
 
 int	new_line_len(char *cake)
 {
@@ -54,8 +29,8 @@ int	new_line_len(char *cake)
 
 char	*get_right_cake(char *cake)
 {
-	int	i;
-	int	final_cake_len;
+	int		i;
+	int		final_cake_len;
 	char	*final_cake;
 
 	i = 0;
@@ -75,40 +50,50 @@ char	*get_right_cake(char *cake)
 	return (final_cake);
 }
 
-char	*get_next_line(int fd)
+int	chars_read_check(int chars_read, char *buf)
 {
-	int	chars_read;
-	char	*buf;
+	if (chars_read == -1)
+	{
+		free(buf);
+		return (1);
+	}
+	return (0);
+}
+
+char	*gnl_core(int fd)
+{
+	int		chars_read;
+	char	*piece;
 	char	*temp;
 	static char	*cake;
 
-	if (fd < 0 || BUFFER_SIZE < 1)
+	piece = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!piece)
 		return (NULL);
 	chars_read = 1;
-	buf = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-	if (!buf)
-		return (NULL);
 	while (chars_read != 0)
 	{
-		chars_read = read(fd, buf, BUFFER_SIZE);
-		if (chars_read == -1)
-		{
-			free(buf);
+		chars_read = read(fd, piece, BUFFER_SIZE);
+		if (chars_read_check(chars_read, piece))
 			return (NULL);
-		}
-		buf[chars_read] = '\0';
-		cake = free_swap(cake, buf);
-		if (is_complete_line(buf))
-			break;
+		piece[chars_read] = '\0';
+		cake = free_swap(cake, piece);
+		if (is_complete_line(piece))
+			break ;
 	}
-	free(buf);
-	if (!cake)
-		return (NULL);
-	if (ft_strlen(cake) == 0)
+	free(piece);
+	if (!cake || ft_strlen(cake) == 0)
 		return (NULL);
 	temp = cake;
 	cake = ft_strdup(&cake[new_line_len(cake)]);
 	return (get_right_cake(temp));
+}
+
+char	*get_next_line(int fd)
+{
+	if (fd < 0 || BUFFER_SIZE < 1)
+		return (NULL);
+	return (gnl_core(fd));
 }
 
 /*
