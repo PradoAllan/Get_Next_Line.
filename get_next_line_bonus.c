@@ -5,93 +5,97 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: aprado <aprado@student.42.rio>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/18 18:24:29 by aprado            #+#    #+#             */
-/*   Updated: 2023/12/20 15:30:23 by aprado           ###   ########.fr       */
+/*   Created: 2023/12/21 19:54:05 by aprado            #+#    #+#             */
+/*   Updated: 2023/12/23 13:39:05 by aprado           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 
-int	new_line_len(char *cake)
+static char	*add_piece(char *cake, char *piece)
 {
-	int	i;
+	char	*new_cake;
 
-	i = 0;
-	if (!cake)
-		return (i);
-	while (cake[i] != '\0')
-	{
-		if (cake[i++] == '\n')
-			return (i);
-	}
-	return (i);
+	new_cake = ft_strjoin(cake, piece);
+	free(cake);
+	return (new_cake);
 }
 
-char	*get_right_cake(char *cake)
+static char	*cut_cake(char *cake)
 {
-	int		i;
-	int		final_cake_len;
 	char	*final_cake;
+	int		i;
 
 	i = 0;
-	if (!cake)
-		return (NULL);
-	final_cake_len = new_line_len(cake);
-	final_cake = malloc(sizeof(char) * (final_cake_len + 1));
+	while (cake[i] && cake[i] != '\n')
+		i++;
+	if (cake[i] == '\n')
+		i++;
+	final_cake = malloc(sizeof(char) * (i + 1));
 	if (!final_cake)
 		return (NULL);
-	final_cake[final_cake_len] = '\0';
-	while (i < final_cake_len)
-	{
+	final_cake[i] = '\0';
+	while (i--)
 		final_cake[i] = cake[i];
-		i++;
+	if (final_cake[0] == '\0')
+	{
+		free(final_cake);
+		return (NULL);
 	}
-	free(cake);
 	return (final_cake);
 }
 
-int	chars_read_check(int chars_read, char *buf)
+static char	*extra_piece(char *cake)
 {
-	if (chars_read == -1)
+	char	*new_cake;
+	int		i;
+
+	i = 0;
+	while (cake[i] && cake[i] != '\n')
+		i++;
+	if (cake[i] == '\n')
+		i++;
+	if (cake[i] == '\0')
 	{
-		free(buf);
-		return (1);
+		free(cake);
+		return (NULL);
 	}
-	return (0);
+	new_cake = ft_strdup(&cake[i]);
+	free(cake);
+	return (new_cake);
 }
 
-char	*gnl_core(int fd)
+static char	*get_next_line_core(int fd)
 {
-	int			chars_read;
-	char		*piece;
-	char		*temp;
 	static char	*cake;
+	char		*piece;
+	char		*right_cake;
+	int			chars_read;
 
+	chars_read = 1;
 	piece = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!piece)
 		return (NULL);
-	chars_read = 1;
-	while (chars_read != 0)
+	while (chars_read > 0 && (!cake || !ft_strchr(cake, '\n')))
 	{
 		chars_read = read(fd, piece, BUFFER_SIZE);
-		if (chars_read_check(chars_read, piece))
+		if (chars_read == -1)
+		{
+			free(piece);
 			return (NULL);
+		}
 		piece[chars_read] = '\0';
-		cake = free_swap(cake, piece);
-		if (is_complete_line(piece))
-			break ;
+		cake = add_piece(cake, piece);
 	}
 	free(piece);
-	if (!cake || ft_strlen(cake) == 0)
-		return (NULL);
-	temp = cake;
-	cake = ft_strdup(&cake[new_line_len(cake)]);
-	return (get_right_cake(temp));
+	right_cake = cut_cake(cake);
+	cake = extra_piece(cake);
+	return (right_cake);
 }
 
 char	*get_next_line(int fd)
 {
 	if (fd < 0 || BUFFER_SIZE < 1)
 		return (NULL);
-	return (gnl_core(fd));
+	return (get_next_line_core(fd));
 }
