@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: aprado <aprado@student.42.rio>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/15 09:13:36 by aprado            #+#    #+#             */
-/*   Updated: 2023/12/20 13:14:55 by aprado           ###   ########.fr       */
+/*   Created: 2023/12/21 19:55:25 by aprado            #+#    #+#             */
+/*   Updated: 2023/12/22 10:58:57 by aprado           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,9 @@
 # include <stdlib.h>
 
 char	*get_next_line(int fd);
+char	*ft_strchr(char *s, int c);
 char	*ft_strjoin(char *s1, char *s2);
-char	*free_swap(char *cake, char *buf);
-int		ft_strlen(char *s);
-int		is_complete_line(char *buf);
 char	*ft_strdup(char *s);
+int		ft_strlen(char *s);
 
 #endif
